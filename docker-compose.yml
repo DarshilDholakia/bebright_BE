@@ -1,0 +1,55 @@
+version: "3.8"
+services:
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - mongodb
+    volumes:
+      - data:/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=rootuser
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    networks:
+      - mongodb
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+
+#  rabbitmq:
+#    image: rabbitmq:3.9.11-management-alpine
+#    container_name: rabbitmq
+#    ports:
+#      - "5672:5672"
+#      - "15672:15672"
+#    networks:
+#      - spring
+
+  consul:
+    image: consul
+    container_name: consul
+    ports:
+      - "8500:8500"
+    networks:
+      - spring
+    command: "agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0 -bind=127.0.0.1"
+
+volumes:
+  data: {}
+
+networks:
+  spring:
+#    driver: bridge
+  mongodb:
+#    driver: bridge
