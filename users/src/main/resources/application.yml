@@ -1,0 +1,18 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: users
+  data:
+    mongodb:
+      authentication-database: admin
+      username: rootuser
+      password: rootpass
+      database: bebright
+      port: 27017
+      host: mongodb
+      auto-index-creation: true
+jwt:
+  secret: secretkey #TODO: secret key should be encrypted
+  token:
+    validity: 180000 #3 minutes validity
