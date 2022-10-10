@@ -19,7 +19,7 @@ services:
     container_name: mongo-express
     restart: always
     ports:
-      - "8086:8086"
+      - "8081:8081"
     networks:
       - mongodb
     environment:
@@ -43,7 +43,8 @@ services:
       - "8500:8500"
     networks:
       - spring
-    command: "agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0 -bind=127.0.0.1"
+    command: "agent -server -node=server-1 -bootstrap-expect=1 -client=0.0.0.0 -bind=127.0.0.1 -ui"
+#    command: "agent -server -ui-dir /ui"
 
 volumes:
   data: {}

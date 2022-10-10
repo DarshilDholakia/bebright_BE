@@ -1,6 +1,12 @@
 server:
-  port: 8081
+  port: 8082
+  error:
+    include-message: always
 spring:
+#  cloud:
+#    consul:
+#      host: http://consul
+#      port: 8500
   application:
     name: users
   data:
@@ -10,7 +16,8 @@ spring:
       password: rootpass
       database: bebright
       port: 27017
-      host: mongodb
+#      host: mongodb
+#      uri: mongodb://rootuser:rootpass@mongodb:27017/bebright
       auto-index-creation: true
 jwt:
   secret: secretkey #TODO: secret key should be encrypted

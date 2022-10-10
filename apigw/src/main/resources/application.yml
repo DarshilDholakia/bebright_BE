@@ -1,6 +1,10 @@
 server:
-  port: 8085
+  port: 8086
 spring:
+#  cloud:
+#    consul:
+#      host: http://consul
+#      port: 8500
   application:
     name: api-gateway
 #  cloud:
