@@ -1,5 +1,0 @@
-spring:
-  cloud:
-    consul:
-      host: http://consul
-      port: 8500
