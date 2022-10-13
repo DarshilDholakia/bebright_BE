@@ -1,16 +1,23 @@
 server:
   port: 8086
 spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: users
+          uri: lb://USERS
+          predicates:
+            - Path=/users/**
+          filters:
+            - AuthenticationFilter
 #  cloud:
 #    consul:
 #      host: http://consul
 #      port: 8500
-  application:
-    name: api-gateway
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: users
-#            uri: lb://USERS
-#            predicates:
-#              - Path=/user/**
+
+jwt:
+  secret: secret
+  validity: 20
+  authDisabled: true

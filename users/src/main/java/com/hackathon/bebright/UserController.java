@@ -4,36 +4,30 @@ import com.hackathon.bebright.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.channels.ReadPendingException;
 
 @RestController
+@RequestMapping("users")
 public class UserController {
-
-    @Autowired
     private JwtUtil jwtUtil;
-
-    @Autowired
     private UserService userService;
 
-    // This Login method generates a JWT token
-    @PostMapping("/user/login")
-    public ResponseEntity<String> login(@RequestBody String userID) {
-        if (userService.checkIfUserExists(userID)) {
-            //Once we have ensured a user exists with this ID only then can a JWT token be generated.
-            String token = jwtUtil.generateToken(userID);
-            return new ResponseEntity<String>(token, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public UserController(JwtUtil jwtUtil, UserService userService) {
+        this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
-    @PostMapping("/user/register")
-    public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+    @GetMapping("authenticate/{username}/{password}")
+    public User checkUserCredentials(@PathVariable("username") String username, @PathVariable("password") String password) {
+        return userService.checkUserCredentialsAreCorrect(username, password);
+    }
+
+    @PostMapping
+    public ResponseEntity<User> addUser(@RequestBody User user) {
+        User newUser = userService.registerUser(user);
+        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
 }
