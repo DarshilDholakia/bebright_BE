@@ -6,6 +6,7 @@ import com.hackathon.bebright.models.User;
 import com.hackathon.bebright.models.UserDto;
 //import com.hackathon.bebright.util.UserMapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +82,9 @@ public class UserService {
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + 3600000); // 1 hour
+        // 1 hour = 3600000
+        // 1 min = 60000
+        // 10 sec = 10000
 
         return Jwts.builder()
                 .setClaims(claims)
