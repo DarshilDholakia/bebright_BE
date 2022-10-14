@@ -1,61 +1,50 @@
 package com.hackathon.bebright.security;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.hackathon.bebright.models.User;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-@Slf4j
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
-    @Autowired
-    private final RouterValidator routerValidator;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final JwtConfig jwtConfig;
+    private final WebClient.Builder webClientBuilder;
 
-    public AuthenticationFilter(RouterValidator routerValidator, JwtTokenUtil jwtTokenUtil, JwtConfig config) {
+    public AuthenticationFilter(WebClient.Builder webClientBuilder) {
         super(Config.class);
-        this.routerValidator = routerValidator;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.jwtConfig = config;
+        this.webClientBuilder = webClientBuilder;
     }
 
     @Override
     public GatewayFilter apply(Config config) {
-        return ((exchange, chain) -> {
-            if (routerValidator.isSecured.test(exchange.getRequest()) && !jwtConfig.isAuthDisabled()) {
-                if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new RuntimeException("Missing Authorisation Header");
-                }
-
-                String authHeader = Objects.requireNonNull(exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION)).get(0);
-                try {
-                    jwtTokenUtil.validateToken(authHeader);
-                }
-                catch (Exception ex) {
-                    log.error("Error Validating Authentication Header", ex);
-//                    List<String> details = new ArrayList<>();
-//                    details.add(ex.getLocalizedMessage());
-//                    ErrorResponseDto error = new ErrorResponseDto(new Date(), HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED", details, exchange.getRequest().getURI().toString());
-//                    ServerHttpResponse response = exchange.getResponse();
-//
-//                    byte[] bytes = SerializationUtils.serialize(error);
-//
-//                    DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
-//                    response.writeWith(Flux.just(buffer));
-//                    response.setStatusCode(HttpStatus.UNAUTHORIZED);
-//                    return response.setComplete();
-                }
+        return (exchange, chain) -> {
+            if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                throw new RuntimeException("Missing authorization information");
             }
 
-            return chain.filter(exchange);
-        });
+            String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+
+            String[] parts = authHeader.split(" ");
+
+            if (parts.length != 2 || !"Bearer".equals(parts[0])) {
+                throw new RuntimeException("Incorrect authorization structure");
+            }
+
+            return webClientBuilder.build()
+                    .post()
+                    .uri("http://users/users/validateToken?token=" + parts[1])
+                    .retrieve().bodyToMono(User.class)
+                    .map(user -> {
+                        exchange.getRequest()
+                                .mutate()
+                                .header("X-auth-user-id", String.valueOf(user.getUserId()));
+                        return exchange;
+                    }).flatMap(chain::filter);
+        };
     }
 
     public static class Config {
+        // empty class as I don't need any particular configuration
     }
 }

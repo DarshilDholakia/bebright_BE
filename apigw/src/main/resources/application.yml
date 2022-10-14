@@ -6,18 +6,17 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: users
+        - id: users-sign-in
           uri: lb://USERS
           predicates:
-            - Path=/users/**
+            - Path=/users/signIn
+        - id: users-by-office
+          uri: lb://USERS
+          predicates:
+            - Path=/users/getUsersByOffice/**
           filters:
             - AuthenticationFilter
 #  cloud:
 #    consul:
 #      host: http://consul
 #      port: 8500
-
-jwt:
-  secret: secret
-  validity: 20
-  authDisabled: true

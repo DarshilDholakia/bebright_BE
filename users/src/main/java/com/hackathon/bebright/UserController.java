@@ -1,33 +1,39 @@
 package com.hackathon.bebright;
 
-import com.hackathon.bebright.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.hackathon.bebright.models.CredentialsDto;
+import com.hackathon.bebright.models.User;
+import com.hackathon.bebright.models.UserDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.channels.ReadPendingException;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
-    private JwtUtil jwtUtil;
-    private UserService userService;
+    private final UserService userService;
 
-    public UserController(JwtUtil jwtUtil, UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
+    @PostMapping("/signIn")
+    public ResponseEntity<Object> signIn(@RequestBody CredentialsDto credentialsDto) {
+        log.info("Trying to login {}", credentialsDto.getUsername());
+        return ResponseEntity.ok(userService.signIn(credentialsDto));
     }
 
-    @GetMapping("authenticate/{username}/{password}")
-    public User checkUserCredentials(@PathVariable("username") String username, @PathVariable("password") String password) {
-        return userService.checkUserCredentialsAreCorrect(username, password);
+    @PostMapping("/validateToken")
+    public ResponseEntity<UserDto> signIn(@RequestParam String token) {
+        log.info("Trying to validate token {}", token);
+        return ResponseEntity.ok(userService.validateToken(token));
     }
 
-    @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody User user) {
-        User newUser = userService.registerUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    @GetMapping("/getUsersByOffice/{office}")
+    public ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office) {
+        return ResponseEntity.ok(userService.getUsersByOffice(office));
     }
 
 }

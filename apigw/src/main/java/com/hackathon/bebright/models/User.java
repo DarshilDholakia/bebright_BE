@@ -1,4 +1,4 @@
-package com.hackathon.bebright;
+package com.hackathon.bebright.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
