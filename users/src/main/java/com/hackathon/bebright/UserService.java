@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final UserMapper userMapper;
 
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
@@ -38,6 +38,16 @@ public class UserService {
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
+
+    public Object registerNewUser(User user) {
+        //TODO: add checking logic to make sure user fields comply with rules otherwise throw exceptions
+        User insertedUser = userRepository.insert(user);
+        return UserDto.builder()
+                .id(insertedUser.getUserId())
+                .username(insertedUser.getUsername())
+                .token(createToken(insertedUser))
+                .build();
     }
 
     public UserDto validateToken(String token) {
@@ -53,7 +63,6 @@ public class UserService {
         }
 
         User user = userOptional.get();
-//        return userMapper.toUserDto(user, createToken(user));
         return UserDto.builder()
                 .id(user.getUserId())
                 .username(user.getUsername())
@@ -66,7 +75,6 @@ public class UserService {
         if (userOptional.isEmpty()) return new AppException("User not found", HttpStatus.NOT_FOUND);
 
         if (credentialsDto.getPassword().equals(userOptional.get().getPassword())) {
-//            return userMapper.toUserDto(userOptional.get(), createToken(userOptional.get()));
             return UserDto.builder()
                     .id(userOptional.get().getUserId())
                     .username(userOptional.get().getUsername())
@@ -95,7 +103,14 @@ public class UserService {
     }
 
     public List<User> getUsersByOffice(String office) {
-        //TODO: Checks for office string
+        //TODO: Checks for office e.g. what happens if users not found
+        //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
         return userRepository.findByOffice(office);
+    }
+
+    public List<User> getUsersByOfficeAndTeam(String office, String team) {
+        //TODO: Checks for office and team e.g. what happens if users not found
+        //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
+        return userRepository.findByOfficeAndTeam(office, team);
     }
 }

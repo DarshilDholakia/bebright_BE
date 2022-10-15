@@ -16,6 +16,16 @@ spring:
             - Path=/users/getUsersByOffice/**
           filters:
             - AuthenticationFilter
+        - id: users-by-office-and-team
+          uri: lb://USERS
+          predicates:
+            - Path=/users/getUsersByOfficeAndTeam/**
+          filters:
+            - AuthenticationFilter
+        - id: register-user
+          uri: lb://USERS
+          predicates:
+            - Path=/users/registerNewUser
 #  cloud:
 #    consul:
 #      host: http://consul

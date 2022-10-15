@@ -17,6 +17,12 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @PostMapping("/registerNewUser")
+    public ResponseEntity<Object> registerNewUser(@RequestBody User user) {
+        log.info("Registering a new user. The user details are {}", user);
+        return ResponseEntity.ok(userService.registerNewUser(user));
+    }
+
     @PostMapping("/signIn")
     public ResponseEntity<Object> signIn(@RequestBody CredentialsDto credentialsDto) {
         log.info("Trying to login {}", credentialsDto.getUsername());
@@ -31,7 +37,14 @@ public class UserController {
 
     @GetMapping("/getUsersByOffice/{office}")
     public ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office) {
+        log.info("Fetching data for users from {} office", office);
         return ResponseEntity.ok(userService.getUsersByOffice(office));
+    }
+
+    @GetMapping("/getUsersByOfficeAndTeam/{office}/{team}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
+        log.info("Fetching data for users from {} office and {} team", office, team);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
     }
 
 }
