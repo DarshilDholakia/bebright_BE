@@ -62,6 +62,8 @@ public class UserService {
             throw new AppException("User not found", HttpStatus.NOT_FOUND);
         }
 
+        //TODO: throw custom exceptions e.g. if token has expired/invalid JWT signature
+
         User user = userOptional.get();
         return UserDto.builder()
                 .id(user.getUserId())
@@ -112,5 +114,15 @@ public class UserService {
         //TODO: Checks for office and team e.g. what happens if users not found
         //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
         return userRepository.findByOfficeAndTeam(office, team);
+    }
+
+    public User updateUserDetails(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getUserId()).get();
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setProfilePicURL(updatedUser.getProfilePicURL());
+        existingUser.setOffice(updatedUser.getOffice());
+        existingUser.setTeam(updatedUser.getTeam());
+        return userRepository.save(existingUser);
     }
 }
