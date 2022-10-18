@@ -47,10 +47,4 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
     }
 
-    @PutMapping("/updateUserDetails")
-    public ResponseEntity<User> updateUserDetails(@RequestBody User updatedUser) {
-        log.info("User with id: {} is being updated. The new details being {}", updatedUser.getUserId(), updatedUser);
-        return ResponseEntity.ok(userService.updateUserDetails(updatedUser));
-    }
-
 }
