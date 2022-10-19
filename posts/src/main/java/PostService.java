@@ -20,4 +20,17 @@ public class PostService {
     public Post getPostById(String postId) {
         return null;
     }
+
+
+    public List<Post> getPostsByUser(String userId) {
+        return null;
+    }
+
+    public List<Post> getPostsByOffice(String office) {
+        return null;
+    }
+
+    public List<Post> getPostsByTeam(String office, String team) {
+        return null;
+    }
 }

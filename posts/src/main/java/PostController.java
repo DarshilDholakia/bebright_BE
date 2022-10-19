@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
 public class PostController {
 
     private PostService postService;
@@ -35,18 +36,18 @@ public class PostController {
     }
 
     @GetMapping(path = "posts/users/{userId}")
-    public Post getPostByUser(@PathVariable("userId") String userId){
-        return postService.getPostByUser(userId);
+    public List<Post> getPostsByUser(@PathVariable("userId") String userId){
+        return postService.getPostsByUser(userId);
     }
 
     @GetMapping(path = "posts/users/{office}")
-    public Post getPostByOffice(@PathVariable("office") String office){
-        return postService.getPostByOffice(office);
+    public List<Post> getPostsByOffice(@PathVariable("office") String office){
+        return postService.getPostsByOffice(office);
     }
 
     @GetMapping(path = "posts/users/{office}/{team}")
-    public Post getPostByOffice(@PathVariable("office") String office, @PathVariable("team") String team){
-        return postService.getPostByTeam(office, team);
+    public List<Post> getPostsByOffice(@PathVariable("office") String office, @PathVariable("team") String team){
+        return postService.getPostsByTeam(office, team);
     }
 
 }
