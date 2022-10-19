@@ -1,5 +1,9 @@
 package com.hackathon.bebright;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hackathon.bebright.exceptions.AppException;
 import com.hackathon.bebright.models.CredentialsDto;
 import com.hackathon.bebright.models.User;
@@ -15,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -50,27 +57,38 @@ public class UserService {
                 .build();
     }
 
-    public UserDto validateToken(String token) {
-        String username = Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
-        Optional<User> userOptional = Optional.of(userRepository.findByUsername(username));
+    public void validateToken(String accessToken) {
+//        String username = Jwts.parser()
+//                .setSigningKey(secretKey)
+//                .parseClaimsJws(token)
+//                .getBody()
+//                .getSubject();
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(accessToken);
+        String username = decodedJWT.getSubject();
 
-        if (userOptional.isEmpty()) {
-            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-        }
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(username, null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        User user = userOptional.get();
-        return UserDto.builder()
-                .id(user.getUserId())
-                .username(user.getUsername())
-                .token(createToken(user))
-                .build();
+//        Optional<User> userOptional = Optional.of(userRepository.findByUsername(username));
+
+//        if (userOptional.isEmpty()) {
+//            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+//        }
+
+//        return UserDto.builder()
+//                .id(userOptional.get().getUserId())
+//                .username(userOptional.get().getUsername())
+//                .token(createToken(userOptional.get()))
+//                .build();
+
+
+
     }
 
-    public Object signIn(CredentialsDto credentialsDto) {
+    public Object login(CredentialsDto credentialsDto) {
         Optional<User> userOptional = Optional.of(userRepository.findByUsername(credentialsDto.getUsername()));
         if (userOptional.isEmpty()) return new AppException("User not found", HttpStatus.NOT_FOUND);
 

@@ -1,7 +1,5 @@
-package com.hackathon.bebright.util;
+package com.hackathon.bebright.security;
 
-import com.hackathon.bebright.models.User;
-import com.hackathon.bebright.models.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

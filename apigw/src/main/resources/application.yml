@@ -9,23 +9,17 @@ spring:
         - id: users-sign-in
           uri: lb://USERS
           predicates:
-            - Path=/users/signIn
-        - id: users-by-office
+            - Path=/login
+        - id: users-protected
           uri: lb://USERS
           predicates:
-            - Path=/users/getUsersByOffice/**
-          filters:
-            - AuthenticationFilter
-        - id: users-by-office-and-team
-          uri: lb://USERS
-          predicates:
-            - Path=/users/getUsersByOfficeAndTeam/**
+            - Path=/users/**
           filters:
             - AuthenticationFilter
         - id: register-user
           uri: lb://USERS
           predicates:
-            - Path=/users/registerNewUser
+            - Path=/register
 #  cloud:
 #    consul:
 #      host: http://consul
