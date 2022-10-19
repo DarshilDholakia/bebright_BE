@@ -19,7 +19,3 @@ spring:
 #      host: mongodb
 #      uri: mongodb://rootuser:rootpass@mongodb:27017/bebright
       auto-index-creation: true
-jwt:
-  secret: secretkey #TODO: secret key should be encrypted
-  token:
-    validity: 180000 #3 minutes validity

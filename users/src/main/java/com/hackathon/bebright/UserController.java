@@ -1,39 +1,55 @@
 package com.hackathon.bebright;
 
-import com.hackathon.bebright.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.hackathon.bebright.models.CredentialsDto;
+import com.hackathon.bebright.models.User;
+import com.hackathon.bebright.models.UserDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.channels.ReadPendingException;
+import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
+@Slf4j
 public class UserController {
+    private final UserService userService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private UserService userService;
-
-    // This Login method generates a JWT token
-    @PostMapping("/user/login")
-    public ResponseEntity<String> login(@RequestBody String userID) {
-        if (userService.checkIfUserExists(userID)) {
-            //Once we have ensured a user exists with this ID only then can a JWT token be generated.
-            String token = jwtUtil.generateToken(userID);
-            return new ResponseEntity<String>(token, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    @PostMapping("/register")
+    public ResponseEntity<Object> registerNewUser(@RequestBody User user) {
+        log.info("Registering a new user. The user details are {}", user);
+        return ResponseEntity.ok(userService.registerNewUser(user));
     }
 
-    @PostMapping("/user/register")
-    public User register(@RequestBody User user) {
-        return userService.registerUser(user);
+    @PostMapping("/login")
+    public ResponseEntity<Object> signIn(@RequestBody CredentialsDto credentialsDto) {
+        log.info("Trying to login {}", credentialsDto.getUsername());
+        return ResponseEntity.ok(userService.signIn(credentialsDto));
+    }
+
+    @PostMapping("/validateToken")
+    public ResponseEntity<UserDto> signIn(@RequestParam String token) {
+        log.info("Trying to validate token {}", token);
+        return ResponseEntity.ok(userService.validateToken(token));
+    }
+
+    @GetMapping("/users/getUsersByOffice/{office}")
+    public ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office) {
+        log.info("Fetching data for users from {} office", office);
+        return ResponseEntity.ok(userService.getUsersByOffice(office));
+    }
+
+    @GetMapping("/users/getUsersByOfficeAndTeam/{office}/{team}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
+        log.info("Fetching data for users from {} office and {} team", office, team);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
+    }
+
+    @PutMapping("/users/updateUserDetails")
+    public ResponseEntity<User> updateUserDetails(@RequestBody User updatedUser) {
+        log.info("User with id: {} is being updated. The new details being {}", updatedUser.getUserId(), updatedUser);
+        return ResponseEntity.ok(userService.updateUserDetails(updatedUser));
     }
 
 }
