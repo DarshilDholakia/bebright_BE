@@ -84,8 +84,12 @@ public class UserService {
 //                .token(createToken(userOptional.get()))
 //                .build();
 
-
-
+        User user = userOptional.get();
+        return UserDto.builder()
+                .id(user.getUserId())
+                .username(user.getUsername())
+                .token(createToken(user))
+                .build();
     }
 
     public Object login(CredentialsDto credentialsDto) {
