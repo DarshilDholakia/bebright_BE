@@ -1,7 +1,7 @@
 package com.hackathon.bebright.security;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+//import org.mapstruct.Mapper;
+//import org.mapstruct.Mapping;
 
 //@Mapper(componentModel = "spring")
 //public interface UserMapper {

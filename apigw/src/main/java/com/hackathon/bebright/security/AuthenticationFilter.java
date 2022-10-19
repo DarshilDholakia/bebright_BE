@@ -33,7 +33,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
             return webClientBuilder.build()
                     .post()
-                    .uri("http://users/users/validateToken?token=" + parts[1])
+                    .uri("http://users/validateToken?token=" + parts[1])
                     .retrieve().bodyToMono(User.class)
                     .map(user -> {
                         exchange.getRequest()

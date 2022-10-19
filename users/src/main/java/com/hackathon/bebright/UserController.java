@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -26,13 +25,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Object> signIn(@RequestBody CredentialsDto credentialsDto) {
         log.info("Trying to login {}", credentialsDto.getUsername());
-        return ResponseEntity.ok(userService.login(credentialsDto));
+        return ResponseEntity.ok(userService.signIn(credentialsDto));
     }
 
     @PostMapping("/validateToken")
-    public void signIn(@RequestParam String token) {
+    public ResponseEntity<UserDto> signIn(@RequestParam String token) {
         log.info("Trying to validate token {}", token);
-        userService.validateToken(token);
+        return ResponseEntity.ok(userService.validateToken(token));
     }
 
     @GetMapping("/users/getUsersByOffice/{office}")
@@ -45,6 +44,12 @@ public class UserController {
     public ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
         log.info("Fetching data for users from {} office and {} team", office, team);
         return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
+    }
+
+    @PutMapping("/users/updateUserDetails")
+    public ResponseEntity<User> updateUserDetails(@RequestBody User updatedUser) {
+        log.info("User with id: {} is being updated. The new details being {}", updatedUser.getUserId(), updatedUser);
+        return ResponseEntity.ok(userService.updateUserDetails(updatedUser));
     }
 
 }

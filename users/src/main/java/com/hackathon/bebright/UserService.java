@@ -1,9 +1,5 @@
 package com.hackathon.bebright;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hackathon.bebright.exceptions.AppException;
 import com.hackathon.bebright.models.CredentialsDto;
 import com.hackathon.bebright.models.User;
@@ -19,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -57,32 +50,19 @@ public class UserService {
                 .build();
     }
 
-    public void validateToken(String accessToken) {
-//        String username = Jwts.parser()
-//                .setSigningKey(secretKey)
-//                .parseClaimsJws(token)
-//                .getBody()
-//                .getSubject();
-        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
-        JWTVerifier verifier = JWT.require(algorithm).build();
-        DecodedJWT decodedJWT = verifier.verify(accessToken);
-        String username = decodedJWT.getSubject();
+    public UserDto validateToken(String token) {
+        String username = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+        Optional<User> userOptional = Optional.of(userRepository.findByUsername(username));
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(username, null, null);
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        if (userOptional.isEmpty()) {
+            throw new AppException("User not found", HttpStatus.NOT_FOUND);
+        }
 
-//        Optional<User> userOptional = Optional.of(userRepository.findByUsername(username));
-
-//        if (userOptional.isEmpty()) {
-//            throw new AppException("User not found", HttpStatus.NOT_FOUND);
-//        }
-
-//        return UserDto.builder()
-//                .id(userOptional.get().getUserId())
-//                .username(userOptional.get().getUsername())
-//                .token(createToken(userOptional.get()))
-//                .build();
+        //TODO: throw custom exceptions e.g. if token has expired/invalid JWT signature
 
         User user = userOptional.get();
         return UserDto.builder()
@@ -92,7 +72,7 @@ public class UserService {
                 .build();
     }
 
-    public Object login(CredentialsDto credentialsDto) {
+    public Object signIn(CredentialsDto credentialsDto) {
         Optional<User> userOptional = Optional.of(userRepository.findByUsername(credentialsDto.getUsername()));
         if (userOptional.isEmpty()) return new AppException("User not found", HttpStatus.NOT_FOUND);
 
@@ -134,5 +114,15 @@ public class UserService {
         //TODO: Checks for office and team e.g. what happens if users not found
         //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
         return userRepository.findByOfficeAndTeam(office, team);
+    }
+
+    public User updateUserDetails(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getUserId()).get();
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setPassword(updatedUser.getPassword());
+        existingUser.setProfilePicURL(updatedUser.getProfilePicURL());
+        existingUser.setOffice(updatedUser.getOffice());
+        existingUser.setTeam(updatedUser.getTeam());
+        return userRepository.save(existingUser);
     }
 }
