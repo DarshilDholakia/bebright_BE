@@ -1,8 +1,13 @@
+package com.hackathon.bebright.posts;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data // does getters and setters, toString etc for you
 @AllArgsConstructor // creates a constructor with all arguments
@@ -16,6 +21,7 @@ public class Post {
     private String description;
     private String imageURL;
     private Integer likes;
-    private String[] comments;
+    private List<String> comments;
+    private LocalDateTime createdAt;
 
 }
