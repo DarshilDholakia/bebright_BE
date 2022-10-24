@@ -53,18 +53,6 @@
 <!--            <artifactId>spring-cloud-starter-config</artifactId>-->
 <!--        </dependency>-->
 
-        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt-api</artifactId>-->
-<!--            <version>0.11.5</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.jsonwebtoken</groupId>-->
-<!--            <artifactId>jjwt</artifactId>-->
-<!--            <version>0.9.1</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
@@ -79,6 +67,14 @@
             <artifactId>netty-resolver-dns-native-macos</artifactId>
             <version>4.1.72.Final</version>
             <classifier>osx-aarch_64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
 
 

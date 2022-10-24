@@ -7,6 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data //does getters and setters, toString etc for you
 @AllArgsConstructor //creates a constructor with all arguments
 @NoArgsConstructor
@@ -23,4 +26,5 @@ public class User {
     private String office;
     private String team;
     // TODO: add interest relationship here OR add User relationship in Interest Entity
+    private List<String> roles;
 }
