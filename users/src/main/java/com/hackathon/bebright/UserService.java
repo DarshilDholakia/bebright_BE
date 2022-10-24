@@ -67,13 +67,15 @@ public class UserService implements UserDetailsService {
     public List<User> getUsersByOffice(String office) {
         //TODO: Checks for office e.g. what happens if users not found
         //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
-        return userRepository.findByOffice(office);
+
+
+        return userRepository.findByOfficesContaining(office);
     }
 
     public List<User> getUsersByOfficeAndTeam(String office, String team) {
         //TODO: Checks for office and team e.g. what happens if users not found
         //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
-        return userRepository.findByOfficeAndTeam(office, team);
+        return userRepository.findByOfficesAndTeamsContaining(office, team);
     }
 
     @Override
