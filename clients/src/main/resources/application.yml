@@ -1,0 +1,8 @@
+#server:
+#  port: 8087
+#spring:
+#  application:
+#    name: web-client
+#users:
+#  service:
+#    url: http://localhost:8082

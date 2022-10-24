@@ -1,16 +1,35 @@
 server:
   port: 8086
+
 spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: api-gateway
+  zipkin:
+    base-url: http://localhost:9411
+  cloud:
+    gateway:
+      routes:
+        - id: users-sign-in
+          uri: lb://USERS
+          predicates:
+            - Path=/login
+        - id: register-user
+          uri: lb://USERS
+          predicates:
+            - Path=/register
+        - id: refresh-token
+          uri: lb://USERS
+          predicates:
+            - Path=/token/refresh
+        - id: users-protected
+          uri: lb://USERS
+          predicates:
+            - Path=/users/**
+          filters:
+            - CustomAuthorisationFilter
 #  cloud:
 #    consul:
 #      host: http://consul
 #      port: 8500
-  application:
-    name: api-gateway
-#  cloud:
-#    gateway:
-#      routes:
-#        - id: users
-#            uri: lb://USERS
-#            predicates:
-#              - Path=/user/**
