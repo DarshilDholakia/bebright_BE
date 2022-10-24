@@ -17,6 +17,9 @@ public interface UserClient {
 
     @GetMapping("/users/getUsersByOffice/{office}")
     ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office);
+
+    @GetMapping("/users/getUsersByOfficeAndTeam/{office}/{team}")
+    ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team);
 }
 
 //@ReactiveFeignClient(value = "users", url = "http://localhost:8082")

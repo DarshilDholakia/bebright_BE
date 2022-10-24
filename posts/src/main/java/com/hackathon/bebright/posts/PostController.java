@@ -50,7 +50,7 @@ public class PostController {
     }
 
     @GetMapping(path = "posts/users/{office}/{team}")
-    public List<Post> getPostsByOffice(@PathVariable("office") String office, @PathVariable("team") String team){
+    public List<List<Post>> getPostsByOffice(@PathVariable("office") String office, @PathVariable("team") String team){
         return postService.getPostsByTeam(office, team);
     }
 
