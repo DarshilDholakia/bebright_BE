@@ -2,9 +2,13 @@ package com.hackathon.bebright.posts;
 
 import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.clients.users.UserClient;
+import com.hackathon.bebright.posts.Exceptions.InvalidRequestException;
+import com.hackathon.bebright.posts.Exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.auditing.CurrentDateTimeProvider;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,22 +20,33 @@ public class PostService {
     private final PostRepository postRepository;
 
     public Post addPost(Post post) {
-        return post;
+        checkPostInputProperties(post);
+        Post addPost = new Post(post.getUserId(), post.getDescription(), post.getImageURL());
+        return postRepository.insert(addPost);
     }
 
     public void deletePostById(String postId) {
+        Post existingPost = getPostOrThrowNull(postId); // Check post exists first
+        postRepository.delete(existingPost);
     }
 
     public Post updatePostById(String postId, Post updatedPost) {
-        return updatedPost;
+        Post existingPost = postRepository.findById(postId).get();
+        existingPost.setDescription(updatedPost.getDescription());
+        existingPost.setImageURL(updatedPost.getImageURL());
+        return postRepository.save(existingPost);
     }
 
     public List<Post> getAllPosts() {
-        return null;
+        List<Post> postList = postRepository.findAll();
+        if (postList == null){
+            throw new InvalidRequestException("There were no posts found");
+        }
+        return postList;
     }
 
     public Post getPostById(String postId) {
-        return postRepository.findById(postId).get();
+        return getPostOrThrowNull(postId);
     }
 
 
@@ -67,13 +82,18 @@ public class PostService {
 
     private Post getPostOrThrowNull(String postId){
         if (postId == null || postId.isEmpty()){
-            throw new IllegalArgumentException("Post id is invalid");
+            throw new PostNotFoundException("Post id is invalid");
         }
-        Post post = postRepository.findById(postId).get();
-        if(post == null){
-            throw new IllegalStateException("Post with id " + postId + " doesn't exist");
+        return postRepository.findById(postId).orElseThrow();
+    }
+
+    private void checkPostInputProperties(Post post) {
+        if (post.getUserId() == null) {
+            throw new InvalidRequestException("User id cannot be null");
         }
-        return post;
+        if (post.getDescription() == null) {
+            throw new InvalidRequestException("Description cannot be null");
+        }
     }
 
 }
