@@ -1,4 +1,4 @@
-package com.hackathon.bebright.posts.Exceptions;
+package com.hackathon.bebright.posts.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients(
-        basePackages = "com.hackathon.bebright.clients.users"
+        basePackages = "com.hackathon.bebright.clients"
 )
 public class PostApplication {
     public static void main(String[] args) {

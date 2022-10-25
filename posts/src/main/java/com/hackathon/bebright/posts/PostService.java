@@ -2,13 +2,11 @@ package com.hackathon.bebright.posts;
 
 import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.clients.users.UserClient;
-import com.hackathon.bebright.posts.Exceptions.InvalidRequestException;
-import com.hackathon.bebright.posts.Exceptions.PostNotFoundException;
+import com.hackathon.bebright.posts.exceptions.InvalidRequestException;
+import com.hackathon.bebright.posts.exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.auditing.CurrentDateTimeProvider;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
