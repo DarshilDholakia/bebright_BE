@@ -57,6 +57,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 30 * 60 * 1000))
                 .withIssuer(request.getRequestURL().toString())
+                .withClaim("roles", roles.stream().collect(Collectors.toList()))
                 .sign(algorithm);
         /*response.setHeader("access_token", access_token);
         response.setHeader("refresh_token", refresh_token);*/
