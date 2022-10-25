@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
+public class CustomAuthorisationFilter extends AbstractGatewayFilterFactory<CustomAuthorisationFilter.Config> {
     private final WebClient.Builder webClientBuilder;
 
-    public AuthenticationFilter(WebClient.Builder webClientBuilder) {
+    public CustomAuthorisationFilter(WebClient.Builder webClientBuilder) {
         super(Config.class);
         this.webClientBuilder = webClientBuilder;
     }
@@ -40,7 +40,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                                 .mutate()
                                 .header("X-auth-user-id", String.valueOf(user.getUserId()));
                         return exchange;
-                    }).flatMap(chain::filter);
+                    })
+                    .flatMap(chain::filter);
         };
     }
 

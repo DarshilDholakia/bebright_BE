@@ -1,43 +1,52 @@
 package com.hackathon.bebright;
 
-import com.hackathon.bebright.models.CredentialsDto;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
 import com.hackathon.bebright.models.User;
-import com.hackathon.bebright.models.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<Object> registerNewUser(@RequestBody User user) {
+    public ResponseEntity<User> registerNewUser(@RequestBody User user) {
         log.info("Registering a new user. The user details are {}", user);
         return ResponseEntity.ok(userService.registerNewUser(user));
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<Object> signIn(@RequestBody CredentialsDto credentialsDto) {
-        log.info("Trying to login {}", credentialsDto.getUsername());
-        return ResponseEntity.ok(userService.signIn(credentialsDto));
-    }
-
     @PostMapping("/validateToken")
-    public ResponseEntity<UserDto> signIn(@RequestParam String token) {
+    public User validateToken(@RequestParam String token) throws InvalidJwtTokenException {
         log.info("Trying to validate token {}", token);
-        return ResponseEntity.ok(userService.validateToken(token));
+        return userService.validateToken(token);
     }
 
     @GetMapping("/users/getUsersByOffice/{office}")
-    public ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office) {
+    public List<User> getUsersByOffice(@PathVariable("office") String office) {
         log.info("Fetching data for users from {} office", office);
-        return ResponseEntity.ok(userService.getUsersByOffice(office));
+        return userService.getUsersByOffice(office);
     }
 
     @GetMapping("/users/getUsersByOfficeAndTeam/{office}/{team}")
@@ -45,11 +54,42 @@ public class UserController {
         log.info("Fetching data for users from {} office and {} team", office, team);
         return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
     }
-
-    @PutMapping("/users/updateUserDetails")
-    public ResponseEntity<User> updateUserDetails(@RequestBody User updatedUser) {
-        log.info("User with id: {} is being updated. The new details being {}", updatedUser.getUserId(), updatedUser);
-        return ResponseEntity.ok(userService.updateUserDetails(updatedUser));
+    @GetMapping("/token/refresh")
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authorizationHeader = request.getHeader(AUTHORIZATION);
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String refresh_token = authorizationHeader.substring("Bearer ".length());
+                Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+                JWTVerifier verifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = verifier.verify(refresh_token);
+                String username = decodedJWT.getSubject();
+                List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
+                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
+                User user = userService.getUserByUsername(username);
+                String access_token = JWT.create()
+                        .withSubject(user.getUsername())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 10 * 60 * 1000))
+                        .withIssuer(request.getRequestURL().toString())
+                        .withClaim("roles", user.getRoles().stream().collect(Collectors.toList()))
+                        .sign(algorithm);
+                Map<String, String> tokens = new HashMap<>();
+                tokens.put("access_token", access_token);
+                tokens.put("refresh_token", refresh_token);
+                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+            }catch (Exception exception) {
+                response.setHeader("error", exception.getMessage());
+                response.setStatus(FORBIDDEN.value());
+                //response.sendError(FORBIDDEN.value());
+                Map<String, String> error = new HashMap<>();
+                error.put("error_message", exception.getMessage());
+                response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
+                new ObjectMapper().writeValue(response.getOutputStream(), error);
+            }
+        } else {
+            throw new RuntimeException("Refresh token is missing");
+        }
     }
-
 }
