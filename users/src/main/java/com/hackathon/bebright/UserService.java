@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -97,5 +98,12 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new AppException("Username not valid", HttpStatus.NOT_FOUND);
         } else return user;
+    }
+
+    public List<User> getUsersByOfficeAndInterest(String interest) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Collection<String> offices = getUserByUsername(username).getOffices();
+        return userRepository.findByOfficesAndInterestsContaining(offices, interest);
     }
 }

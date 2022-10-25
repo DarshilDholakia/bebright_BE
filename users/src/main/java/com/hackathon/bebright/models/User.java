@@ -26,6 +26,6 @@ public class User {
     private String profilePicURL;
     private Collection<String> offices;
     private Collection<String> teams;
-    // TODO: add interest relationship here OR add User relationship in Interest Entity
     private List<String> roles;
+    private Collection<InterestType> interests;
 }

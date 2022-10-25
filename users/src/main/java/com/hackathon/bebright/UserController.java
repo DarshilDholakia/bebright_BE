@@ -11,7 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +57,13 @@ public class UserController {
         log.info("Fetching data for users from {} office and {} team", office, team);
         return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
     }
+
+    @GetMapping("users/getUsersByOfficeAndInterest/{interest}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndInterest(@PathVariable("interest") String interest) {
+        log.info("Fetching users from user's offices with interest: {}", interest);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(interest));
+    }
+
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
