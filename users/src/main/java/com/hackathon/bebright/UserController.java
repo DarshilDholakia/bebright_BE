@@ -9,9 +9,13 @@ import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
 import com.hackathon.bebright.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +63,14 @@ public class UserController {
         log.info("Fetching data for users from {} office and {} team", office, team);
         return userService.getUsersByOfficeAndTeam(office, team);
     }
+
+    @GetMapping("users/getUsersByOfficeAndInterest/{interestType}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndInterest(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                                                  @PathVariable("interestType") String interestType) {
+        log.info("Fetching users from user's offices with interestType: {}", interestType);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(bearerToken, interestType));
+    }
+
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
