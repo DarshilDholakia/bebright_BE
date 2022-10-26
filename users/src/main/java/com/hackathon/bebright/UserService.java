@@ -38,6 +38,8 @@ public class UserService implements UserDetailsService {
 
     public User registerNewUser(User user) {
         //TODO: add checking logic to make sure user fields comply with rules otherwise throw exceptions
+
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User insertedUser = userRepository.insert(user);
         return insertedUser;
