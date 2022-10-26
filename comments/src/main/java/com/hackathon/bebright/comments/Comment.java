@@ -21,5 +21,10 @@ public class Comment {
     private String commentText;
     private LocalDateTime createdAt;
 
-
+    public Comment(String postId, String username, String commentText) {
+        this.postId = postId;
+        this.username = username;
+        this.commentText = commentText;
+        this.createdAt = LocalDateTime.now();
+    }
 }
