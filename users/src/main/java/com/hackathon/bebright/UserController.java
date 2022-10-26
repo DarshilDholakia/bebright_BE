@@ -9,6 +9,7 @@ import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
 import com.hackathon.bebright.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -58,10 +59,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
     }
 
-    @GetMapping("users/getUsersByOfficeAndInterest/{interest}")
-    public ResponseEntity<List<User>> getUsersByOfficeAndInterest(@PathVariable("interest") String interest) {
-        log.info("Fetching users from user's offices with interest: {}", interest);
-        return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(interest));
+    @GetMapping("users/getUsersByOfficeAndInterest/{interestType}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndInterest(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                                                  @PathVariable("interestType") String interestType) {
+        log.info("Fetching users from user's offices with interestType: {}", interestType);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(bearerToken, interestType));
     }
 
     @GetMapping("/token/refresh")

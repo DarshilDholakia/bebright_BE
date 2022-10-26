@@ -27,5 +27,5 @@ public class User {
     private Collection<String> offices;
     private Collection<String> teams;
     private List<String> roles;
-    private Collection<InterestType> interests;
+//    private Collection<InterestType> interests;
 }
