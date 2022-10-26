@@ -16,10 +16,13 @@ public interface UserClient {
 //    public User checkUserCredentials(@PathVariable("username") String username, @PathVariable("password") String password);
 
     @GetMapping("/users/getUsersByOffice/{office}")
-    ResponseEntity<List<User>> getUsersByOffice(@PathVariable("office") String office);
+    List<User> getUsersByOffice(@PathVariable("office") String office);
 
     @GetMapping("/users/getUsersByOfficeAndTeam/{office}/{team}")
-    ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team);
+    List<User> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team);
+
+    @GetMapping("/users/getUserByUsername/{username}")
+    public User getUserByUsername(@PathVariable("username") String username);
 }
 
 //@ReactiveFeignClient(value = "users", url = "http://localhost:8082")
