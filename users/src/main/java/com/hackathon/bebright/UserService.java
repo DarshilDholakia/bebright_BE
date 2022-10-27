@@ -8,6 +8,7 @@ import com.hackathon.bebright.clients.interests.Interest;
 import com.hackathon.bebright.clients.interests.InterestClient;
 import com.hackathon.bebright.exceptions.AppException;
 import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
+import com.hackathon.bebright.exceptions.InvalidRequestException;
 import com.hackathon.bebright.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,19 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getUsersByOfficeAndTeam(String office, String team) {
-        //TODO: Checks for office and team e.g. what happens if users not found
+        List<User> usersFromSameOffice = userRepository.findByOfficesContaining(office);
+
+        if (usersFromSameOffice.isEmpty()) {
+            throw new InvalidRequestException("There are no users from this office");
+        }
+
+        List<String> userIdFromSameOffice = usersFromSameOffice.stream().map(user -> user.getUserId()).collect(Collectors.toList());
+        List<User> usersFromSameOfficeAndTeam = userRepository.findByUserIdAndTeamsContaining(userIdFromSameOffice, team);
+
+        if (usersFromSameOfficeAndTeam.isEmpty()) {
+            throw new InvalidRequestException("There are no users from this office and team");
+        }
+
         //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
         return userRepository.findByOfficesAndTeamsContaining(office, team);
     }
