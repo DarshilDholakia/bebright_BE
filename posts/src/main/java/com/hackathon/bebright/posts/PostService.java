@@ -9,6 +9,7 @@ import com.hackathon.bebright.clients.users.UserClient;
 import com.hackathon.bebright.posts.exceptions.InvalidRequestException;
 import com.hackathon.bebright.posts.exceptions.PostNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,9 +23,9 @@ public class PostService {
     private final UserClient userClient;
     private final PostRepository postRepository;
 
-    public Post addPost(Post post) {
+    public Post addPost(String bearerToken, Post post) {
         checkPostInputProperties(post);
-        Post addPost = new Post(post.getUserId(), post.getDescription(), post.getImageURL());
+        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL());
         return postRepository.insert(addPost);
     }
 
@@ -53,40 +54,32 @@ public class PostService {
     }
 
 
-    public List<Post> getPostsByUser(String userId) {
-        return postRepository.findByUserId(userId);
+    public List<Post> getPostsByUser(String bearerToken) {
+        String username = getUsername(bearerToken);
+        return postRepository.findByUsername(username);
     }
 
-    public List<List<Post>> getPostsByOffice(String bearerToken, String office) {
+    public List<Post> getPostsByOffice(String bearerToken, String office) {
         User user = userClient.getUserByUsername(getUsername(bearerToken));
 
         if (!user.getOffices().contains(office)) {
             throw new InvalidRequestException("You do not belong to this office");
         }
 
-        List<User> userList = userClient.getUsersByOffice(office); // Filter our users by office
+        List<String> usernameList = userClient.getUsernamesByOffice(office); // Filter our users by office
 
-        List<String> userIdList = userList.stream().map(individualUser -> individualUser.getUserId()).collect(Collectors.toList()); // From these users, we find their ids
+//        List<String> usernameList = userList.stream().map(individualUser -> individualUser.getUsername()).collect(Collectors.toList()); // From these users, we find their usernames
 
-        List<List<Post>> postList = new ArrayList<>();
-        userIdList.forEach(userId -> postList.add(postRepository.findByUserId(userId)));
-        // Collate the posts of the relevant
-        // users using their ids. List of lists used because we gather a list of posts for one user,
-        // then a list of these for each user
-        return postList;
+        return postRepository.findByUsername(usernameList);
     }
 
-    public List<List<Post>> getPostsByOfficeAndTeam(String office, String team) {
-        List<User> userList = userClient.getUsersByOfficeAndTeam(office, team); // Filter our users by office and team
+    public List<Post> getPostsByOfficeAndTeam(String office, String team) {
+        List<String> usernameList = userClient.getUsernamesByOfficeAndTeam(office, team); // Filter our users by office and team
 
-        List<String> userIdList = userList.stream().map(individualUser -> individualUser.getUserId()).collect(Collectors.toList());
-        // From these users, we find their ids
+//        List<String> usernameList = userList.stream().map(individualUser -> individualUser.getUsername()).collect(Collectors.toList());
+        // From these users, we find their usernames
 
-        List<List<Post>> postList = new ArrayList<>();
-        userIdList.forEach(userId -> postList.add(postRepository.findByUserId(userId))); // Collate the posts of the relevant
-        // users using their ids. List of lists used because we gather a list of posts for one user,
-        // then a list of these for each user
-        return postList;
+        return postRepository.findByUsername(usernameList);
     }
 
     private Post getPostOrThrowNull(String postId){
@@ -97,9 +90,6 @@ public class PostService {
     }
 
     private void checkPostInputProperties(Post post) {
-        if (post.getUserId() == null) {
-            throw new InvalidRequestException("User id cannot be null");
-        }
         if (post.getDescription() == null) {
             throw new InvalidRequestException("Description cannot be null");
         }

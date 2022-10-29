@@ -10,22 +10,18 @@ import com.hackathon.bebright.exceptions.AppException;
 import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
 import com.hackathon.bebright.exceptions.InvalidRequestException;
 import com.hackathon.bebright.models.User;
+import com.hackathon.bebright.models.Username;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -39,11 +35,14 @@ public class UserService implements UserDetailsService {
 
     public User registerNewUser(User user) {
         //TODO: add checking logic to make sure user fields comply with rules otherwise throw exceptions
-
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User insertedUser = userRepository.insert(user);
-        return insertedUser;
+        try {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            User insertedUser = userRepository.insert(user);
+            return insertedUser;
+        } catch (Exception e) {
+            log.error("Error logging in: {}", e.getMessage());
+            throw new InvalidRequestException("Username already taken");
+        }
     }
 
     public User validateToken(String accessToken) throws InvalidJwtTokenException {
@@ -134,5 +133,22 @@ public class UserService implements UserDetailsService {
         DecodedJWT decodedJWT = verifier.verify(accessToken);
         String username = decodedJWT.getSubject();
         return username;
+    }
+
+    public List<String> getUsernamesByOffice(String office) {
+
+        List<Username> usernameObjects = userRepository.findUsernameByOffice(office);
+        List<String> usernameList = new ArrayList<>();
+        usernameObjects.forEach(usernameObject -> usernameList.add(usernameObject.getUsername()));
+
+        return usernameList;
+    }
+
+    public List<String> getUsernamesByOfficeAndTeam(String office, String team) {
+        List<Username> usernameObjects = userRepository.findUsernameByOfficeAndTeam(office, team);
+        List<String> usernameList = new ArrayList<>();
+        usernameObjects.forEach(usernameObject -> usernameList.add(usernameObject.getUsername()));
+
+        return usernameList;
     }
 }

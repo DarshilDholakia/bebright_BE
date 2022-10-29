@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +23,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Map.of;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -69,6 +67,16 @@ public class UserController {
                                                                   @PathVariable("interestType") String interestType) {
         log.info("Fetching users from user's offices with interestType: {}", interestType);
         return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(bearerToken, interestType));
+    }
+
+    @GetMapping("users/getUsernameByOffice/{office}")
+    List<String> getUsernamesByOffice(@PathVariable("office") String office) {
+        return userService.getUsernamesByOffice(office);
+    }
+
+    @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
+    List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
+        return userService.getUsernamesByOfficeAndTeam(office, team);
     }
 
     @GetMapping("/token/refresh")

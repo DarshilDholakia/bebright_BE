@@ -23,6 +23,12 @@ public interface UserClient {
 
     @GetMapping("/users/getUserByUsername/{username}")
     public User getUserByUsername(@PathVariable("username") String username);
+
+    @GetMapping("users/getUsernameByOffice/{office}")
+    List<String> getUsernamesByOffice(@PathVariable("office") String office);
+
+    @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
+    List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team);
 }
 
 //@ReactiveFeignClient(value = "users", url = "http://localhost:8082")

@@ -15,8 +15,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(path = "posts")
-    public ResponseEntity<Post> addPost(@RequestBody Post post){
-        Post newPost = postService.addPost(post);
+    public ResponseEntity<Post> addPost(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                        @RequestBody Post post){
+        Post newPost = postService.addPost(bearerToken, post);
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
     }
 
@@ -40,19 +41,19 @@ public class PostController {
         return postService.getPostById(postId);
     }
 
-    @GetMapping(path = "posts/users/{userId}")
-    public List<Post> getPostsByUser(@PathVariable("userId") String userId){
-        return postService.getPostsByUser(userId);
+    @GetMapping(path = "posts")
+    public List<Post> getPostsByUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken){
+        return postService.getPostsByUser(bearerToken);
     }
 
     @GetMapping(path = "posts/office/{office}")
-    public List<List<Post>> getPostsByOffice(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+    public List<Post> getPostsByOffice(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
                                              @PathVariable("office") String office){
         return postService.getPostsByOffice(bearerToken, office);
     }
 
     @GetMapping(path = "posts/{office}/{team}")
-    public List<List<Post>> getPostsByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team){
+    public List<Post> getPostsByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team){
         return postService.getPostsByOfficeAndTeam(office, team);
     }
 
