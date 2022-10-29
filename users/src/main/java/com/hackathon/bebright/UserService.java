@@ -6,10 +6,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hackathon.bebright.clients.interests.Interest;
 import com.hackathon.bebright.clients.interests.InterestClient;
+import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.exceptions.AppException;
 import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
 import com.hackathon.bebright.exceptions.InvalidRequestException;
-import com.hackathon.bebright.models.User;
 import com.hackathon.bebright.models.Username;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -150,5 +150,17 @@ public class UserService implements UserDetailsService {
         usernameObjects.forEach(usernameObject -> usernameList.add(usernameObject.getUsername()));
 
         return usernameList;
+    }
+
+    public List<String> getUsersOffices(String bearerToken) {
+        String username = getUsername(bearerToken);
+        User user = userRepository.findByUsername(username);
+        return (List<String>) user.getOffices();
+    }
+
+    public List<String> getUsersTeams(String bearerToken) {
+        String username = getUsername(bearerToken);
+        User user = userRepository.findByUsername(username);
+        return (List<String>) user.getTeams();
     }
 }

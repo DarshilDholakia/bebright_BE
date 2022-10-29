@@ -5,8 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
-import com.hackathon.bebright.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -77,6 +77,16 @@ public class UserController {
     @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
     List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
         return userService.getUsernamesByOfficeAndTeam(office, team);
+    }
+
+    @GetMapping("users/getUsersOffices")
+    List<String> getUsersOffices(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return userService.getUsersOffices(bearerToken);
+    }
+
+    @GetMapping("users/getUsersTeams")
+    List<String> getUsersTeams(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return userService.getUsersTeams(bearerToken);
     }
 
     @GetMapping("/token/refresh")

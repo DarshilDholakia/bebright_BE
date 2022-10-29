@@ -104,4 +104,15 @@ public class PostService {
         return username;
     }
 
+    public Post addLike(String postId) {
+        Post post = postRepository.findById(postId).get();
+        post.setLikes(post.getLikes() + 1);
+        return postRepository.save(post);
+    }
+
+    public Post removeLike(String postId) {
+        Post post = postRepository.findById(postId).get();
+        post.setLikes(post.getLikes() - 1);
+        return postRepository.save(post);
+    }
 }

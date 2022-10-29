@@ -57,4 +57,14 @@ public class PostController {
         return postService.getPostsByOfficeAndTeam(office, team);
     }
 
+    @PutMapping(path = "posts/addLike/{postId}")
+    public Post addLike(@PathVariable("postId") String postId) {
+        return postService.addLike(postId);
+    }
+
+    @PutMapping(path = "posts/removeLike/{postId}")
+    public Post removeLike(@PathVariable("postId") String postId) {
+        return postService.removeLike(postId);
+    }
+
 }
