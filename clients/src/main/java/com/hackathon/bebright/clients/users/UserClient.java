@@ -1,10 +1,13 @@
 package com.hackathon.bebright.clients.users;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.util.Collection;
 import java.util.List;
 //import reactivefeign.spring.config.ReactiveFeignClient;
 //import reactor.core.publisher.Mono;
@@ -26,6 +29,9 @@ public interface UserClient {
 
     @GetMapping("users/getUsernameByOffice/{office}")
     List<String> getUsernamesByOffice(@PathVariable("office") String office);
+
+    @GetMapping("/users/getUsernamesByMultipleOffices/{token}")
+    List<String> getUsernamesByMultipleOffices(@PathVariable("token") String bearerToken);
 
     @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
     List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team);

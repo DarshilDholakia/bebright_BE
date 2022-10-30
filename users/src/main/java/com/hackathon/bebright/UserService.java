@@ -144,6 +144,17 @@ public class UserService implements UserDetailsService {
         return usernameList;
     }
 
+    // To be shown on the timeline without any filters being applied (posts from users across all current user's offices)
+    public List<String> getUsernamesByMultipleOffices(String bearerToken) {
+        String username = getUsername(bearerToken);
+        User user = getUserByUsername(username);
+        Collection<String> offices = user.getOffices();
+        List<Username> usernameObjectList = userRepository.findUsernamesByMultipleOffices(offices);
+        List<String> stringUsernameList = new ArrayList<>();
+        usernameObjectList.forEach(usernameObject -> stringUsernameList.add(usernameObject.getUsername()));
+        return stringUsernameList;
+    }
+
     public List<String> getUsernamesByOfficeAndTeam(String office, String team) {
         List<Username> usernameObjects = userRepository.findUsernameByOfficeAndTeam(office, team);
         List<String> usernameList = new ArrayList<>();

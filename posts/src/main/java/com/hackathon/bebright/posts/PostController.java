@@ -52,6 +52,11 @@ public class PostController {
         return postService.getPostsByOffice(bearerToken, office);
     }
 
+    @GetMapping(path = "posts/offices")
+    public List<Post> getPostsByMultipleOffice(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return postService.getPostsByMultipleOffice(bearerToken);
+    }
+
     @GetMapping(path = "posts/{office}/{team}")
     public List<Post> getPostsByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team){
         return postService.getPostsByOfficeAndTeam(office, team);

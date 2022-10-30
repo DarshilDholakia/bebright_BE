@@ -20,6 +20,9 @@ public interface UserRepository extends MongoRepository<User, String> {
     @Query(value = "{'offices': ?0}", fields = "{'username': 1, '_id': 0}")
     List<Username> findUsernameByOffice(String office);
 
+    @Query(value = "{'offices': {$in: ?0}}", fields = "{'username': 1, '_id': 0}")
+    List<Username> findUsernamesByMultipleOffices(Collection<String> offices);
+
     @Query(value = "{$and: [{'offices': ?0}, {'teams': ?1}]}", fields = "{'username': 1, '_id': 0}")
     List<Username> findUsernameByOfficeAndTeam(String office, String team);
 }

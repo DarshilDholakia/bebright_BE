@@ -74,6 +74,11 @@ public class UserController {
         return userService.getUsernamesByOffice(office);
     }
 
+    @GetMapping("/users/getUsernamesByMultipleOffices/{token}")
+    List<String> getUsernamesByMultipleOffices(@PathVariable("token") String bearerToken) {
+        return userService.getUsernamesByMultipleOffices(bearerToken);
+    }
+
     @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
     List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
         return userService.getUsernamesByOfficeAndTeam(office, team);

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,12 @@ public class PostService {
 //        List<String> usernameList = userList.stream().map(individualUser -> individualUser.getUsername()).collect(Collectors.toList()); // From these users, we find their usernames
 
         return postRepository.findByUsername(usernameList);
+    }
+
+    public List<Post> getPostsByMultipleOffice(String bearerToken) {
+        List<String> usernameList = userClient.getUsernamesByMultipleOffices(bearerToken);
+        List<Post> postList = postRepository.findByUsername(usernameList);
+        return postList;
     }
 
     public List<Post> getPostsByOfficeAndTeam(String office, String team) {
