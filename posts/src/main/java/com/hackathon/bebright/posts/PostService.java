@@ -65,7 +65,7 @@ public class PostService {
         return postList;
     }
 
-    public List<List<Post>> getPostsByTeam(String office, String team) {
+    public List<List<Post>> getPostsByOfficeAndTeam(String office, String team) {
         List<User> userList = userClient.getUsersByOfficeAndTeam(office, team).getBody(); // Filter our users by office and team
 
         List<String> userIdList = new ArrayList<>();
