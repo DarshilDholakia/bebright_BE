@@ -5,10 +5,11 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.exceptions.InvalidJwtTokenException;
-import com.hackathon.bebright.models.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Map.of;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
@@ -43,6 +45,11 @@ public class UserController {
         return userService.validateToken(token);
     }
 
+    @GetMapping("/users/getUserByUsername/{username}")
+    public User getUserByUsername(@PathVariable("username") String username) {
+        return userService.getUserByUsername(username);
+    }
+
     @GetMapping("/users/getUsersByOffice/{office}")
     public List<User> getUsersByOffice(@PathVariable("office") String office) {
         log.info("Fetching data for users from {} office", office);
@@ -50,10 +57,43 @@ public class UserController {
     }
 
     @GetMapping("/users/getUsersByOfficeAndTeam/{office}/{team}")
-    public ResponseEntity<List<User>> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
+    public List<User> getUsersByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
         log.info("Fetching data for users from {} office and {} team", office, team);
-        return ResponseEntity.ok(userService.getUsersByOfficeAndTeam(office, team));
+        return userService.getUsersByOfficeAndTeam(office, team);
     }
+
+    @GetMapping("users/getUsersByOfficeAndInterest/{interestType}")
+    public ResponseEntity<List<User>> getUsersByOfficeAndInterest(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                                                  @PathVariable("interestType") String interestType) {
+        log.info("Fetching users from user's offices with interestType: {}", interestType);
+        return ResponseEntity.ok(userService.getUsersByOfficeAndInterest(bearerToken, interestType));
+    }
+
+    @GetMapping("users/getUsernameByOffice/{office}")
+    List<String> getUsernamesByOffice(@PathVariable("office") String office) {
+        return userService.getUsernamesByOffice(office);
+    }
+
+    @GetMapping("/users/getUsernamesByMultipleOffices/{token}")
+    List<String> getUsernamesByMultipleOffices(@PathVariable("token") String bearerToken) {
+        return userService.getUsernamesByMultipleOffices(bearerToken);
+    }
+
+    @GetMapping("users/getUsernameByOfficeAndTeam/{office}/{team}")
+    List<String> getUsernamesByOfficeAndTeam(@PathVariable("office") String office, @PathVariable("team") String team) {
+        return userService.getUsernamesByOfficeAndTeam(office, team);
+    }
+
+    @GetMapping("users/getUsersOffices")
+    List<String> getUsersOffices(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return userService.getUsersOffices(bearerToken);
+    }
+
+    @GetMapping("users/getUsersTeams")
+    List<String> getUsersTeams(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return userService.getUsersTeams(bearerToken);
+    }
+
     @GetMapping("/token/refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);

@@ -1,14 +1,14 @@
 server:
-  port: 8082
+  port: 8085
   error:
     include-message: always
 spring:
-#  cloud:
-#    consul:
-#      host: http://consul
-#      port: 8500
+  #  cloud:
+  #    consul:
+  #      host: http://consul
+  #      port: 8500
   application:
-    name: users
+    name: interests
   data:
     mongodb:
       authentication-database: admin
@@ -16,8 +16,8 @@ spring:
       password: rootpass
       database: bebright
       port: 27017
-#      host: mongodb
-#      uri: mongodb://rootuser:rootpass@mongodb:27017/bebright
+      #      host: mongodb
+      #      uri: mongodb://rootuser:rootpass@mongodb:27017/bebright
       auto-index-creation: true
   zipkin:
     base-url: http://localhost:9411

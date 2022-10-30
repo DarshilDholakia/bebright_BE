@@ -1,10 +1,8 @@
 package com.hackathon.bebright.posts;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,15 +18,15 @@ public class Post {
 
     @Id
     private String postId;
-    private String userId;
+    private String username;
     private String description;
     private String imageURL;
     private Integer likes;
     private List<String> comments;
     private LocalDateTime createdAt;
 
-    public Post(String userId, String description, String imageURL) {
-        this.userId = userId;
+    public Post(String username, String description, String imageURL) {
+        this.username = username;
         this.description = description;
         this.imageURL = imageURL;
         this.likes = 0;
@@ -36,11 +34,15 @@ public class Post {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Post(String userId, String description) {
-        this.userId = userId;
+    public Post(String username, String description) {
+        this.username = username;
         this.description = description;
         this.likes = 0;
         this.comments = new ArrayList<>();
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Post(String username) {
+        this.username = username;
     }
 }

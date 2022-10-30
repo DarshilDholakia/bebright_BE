@@ -11,6 +11,7 @@ spring:
   cloud:
     gateway:
       routes:
+#        ROUTES FOR USER SERVICE
         - id: users-sign-in
           uri: lb://USERS
           predicates:
@@ -27,6 +28,20 @@ spring:
           uri: lb://USERS
           predicates:
             - Path=/users/**
+          filters:
+            - CustomAuthorisationFilter
+
+#       POST ROUTES
+        - id: posts-protected
+          uri: lb://POSTS
+          predicates:
+            - Path=/posts/**
+
+#         ROUTES FOR INTEREST SERVICE
+        - id: interests-protected
+          uri: lb://INTERESTS
+          predicates:
+            - Path=/interests/**
           filters:
             - CustomAuthorisationFilter
 #  cloud:
