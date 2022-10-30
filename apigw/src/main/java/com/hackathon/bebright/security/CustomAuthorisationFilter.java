@@ -1,6 +1,6 @@
 package com.hackathon.bebright.security;
 
-import com.hackathon.bebright.models.User;
+import com.hackathon.bebright.clients.users.User;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
