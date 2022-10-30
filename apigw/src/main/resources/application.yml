@@ -44,6 +44,14 @@ spring:
             - Path=/interests/**
           filters:
             - CustomAuthorisationFilter
+
+#         ROUTES FOR COMMENTS SERVICE
+        - id: comments-protected
+          uri: lb://COMMENTS
+          predicates:
+            - Path=/comments/**
+          filters:
+            - CustomAuthorisationFilter
 #  cloud:
 #    consul:
 #      host: http://consul

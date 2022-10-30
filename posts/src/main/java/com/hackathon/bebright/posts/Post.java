@@ -1,5 +1,6 @@
 package com.hackathon.bebright.posts;
 
+import com.hackathon.bebright.clients.comments.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,16 +23,16 @@ public class Post {
     private String description;
     private String imageURL;
     private Integer likes;
-    private List<String> comments;
+    private List<Comment> comments;
     private LocalDateTime createdAt;
 
-    public Post(String username, String description, String imageURL) {
+    public Post(String username, String description, String imageURL, LocalDateTime createdAt) {
         this.username = username;
         this.description = description;
         this.imageURL = imageURL;
         this.likes = 0;
         this.comments = new ArrayList<>();
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
     }
 
     public Post(String username, String description) {

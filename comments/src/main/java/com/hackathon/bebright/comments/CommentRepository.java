@@ -1,5 +1,6 @@
 package com.hackathon.bebright.comments;
 
+import com.hackathon.bebright.clients.comments.Comment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

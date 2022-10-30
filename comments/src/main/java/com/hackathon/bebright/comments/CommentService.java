@@ -1,5 +1,10 @@
 package com.hackathon.bebright.comments;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hackathon.bebright.clients.comments.Comment;
 import com.hackathon.bebright.comments.exceptions.CommentNotFoundException;
 import com.hackathon.bebright.comments.exceptions.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +18,9 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    public Comment addComment(Comment comment) {
-        checkCommentInputProperties(comment);
-        Comment addComment = new Comment(comment.getPostId(), comment.getUsername(), comment.getCommentText());
+    public Comment addComment(Comment comment, String bearerToken) {
+        Comment addComment = new Comment(comment.getPostId(), getUsername(bearerToken), comment.getCommentText());
+        checkCommentInputProperties(addComment);
         return commentRepository.insert(addComment);
     }
 
@@ -63,5 +68,14 @@ public class CommentService {
         if (comment.getCommentText() == null) {
             throw new InvalidRequestException("Comment text cannot be null");
         }
+    }
+
+    private String getUsername(String bearerToken) {
+        String accessToken = bearerToken.split(" ")[1];
+        Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+        DecodedJWT decodedJWT = verifier.verify(accessToken);
+        String username = decodedJWT.getSubject();
+        return username;
     }
 }

@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.hackathon.bebright.clients.comments.CommentClient;
 import com.hackathon.bebright.clients.users.User;
 import com.hackathon.bebright.clients.users.UserClient;
 import com.hackathon.bebright.posts.exceptions.InvalidRequestException;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,11 +24,12 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final UserClient userClient;
+    private final CommentClient commentClient;
     private final PostRepository postRepository;
 
     public Post addPost(String bearerToken, Post post) {
         checkPostInputProperties(post);
-        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL());
+        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL(), LocalDateTime.now());
         return postRepository.insert(addPost);
     }
 
@@ -54,10 +57,11 @@ public class PostService {
         return getPostOrThrowNull(postId);
     }
 
-
     public List<Post> getPostsByUser(String bearerToken) {
         String username = getUsername(bearerToken);
-        return postRepository.findByUsername(username);
+        List<Post> postListByUser = postRepository.findByUsername(username);
+        postListByUser.forEach(post -> post.setComments(commentClient.getCommentsByPostId(post.getPostId())));
+        return postListByUser;
     }
 
     public List<Post> getPostsByOffice(String bearerToken, String office) {
@@ -69,24 +73,29 @@ public class PostService {
 
         List<String> usernameList = userClient.getUsernamesByOffice(office); // Filter our users by office
 
-//        List<String> usernameList = userList.stream().map(individualUser -> individualUser.getUsername()).collect(Collectors.toList()); // From these users, we find their usernames
-
-        return postRepository.findByUsername(usernameList);
-    }
-
-    public List<Post> getPostsByMultipleOffice(String bearerToken) {
-        List<String> usernameList = userClient.getUsernamesByMultipleOffices(bearerToken);
         List<Post> postList = postRepository.findByUsername(usernameList);
+        postList.forEach(post -> post.setComments(commentClient.getCommentsByPostId(post.getPostId())));
+
         return postList;
     }
 
+    //HERE
+    public List<Post> getPostsByMultipleOffice(String bearerToken) {
+        List<String> usernameList = userClient.getUsernamesByMultipleOffices(bearerToken);
+        List<Post> postList = postRepository.findByUsername(usernameList);
+        postList.forEach(post -> post.setComments(commentClient.getCommentsByPostId(post.getPostId())));
+
+        return postList;
+    }
+
+    //HERE
     public List<Post> getPostsByOfficeAndTeam(String office, String team) {
         List<String> usernameList = userClient.getUsernamesByOfficeAndTeam(office, team); // Filter our users by office and team
 
-//        List<String> usernameList = userList.stream().map(individualUser -> individualUser.getUsername()).collect(Collectors.toList());
-        // From these users, we find their usernames
+        List<Post> postList = postRepository.findByUsername(usernameList);
+        postList.forEach(post -> post.setComments(commentClient.getCommentsByPostId(post.getPostId())));
 
-        return postRepository.findByUsername(usernameList);
+        return postList;
     }
 
     private Post getPostOrThrowNull(String postId){

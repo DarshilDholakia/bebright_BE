@@ -1,4 +1,4 @@
-package com.hackathon.bebright.comments;
+package com.hackathon.bebright.clients.comments;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,5 +26,11 @@ public class Comment {
         this.username = username;
         this.commentText = commentText;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Comment(String username, String commentText, LocalDateTime createdAt) {
+        this.username = username;
+        this.commentText = commentText;
+        this.createdAt = createdAt;
     }
 }
