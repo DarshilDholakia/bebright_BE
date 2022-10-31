@@ -72,4 +72,10 @@ public class PostController {
         return postService.removeLike(postId);
     }
 
+    @GetMapping(path = "posts/check/{postId}")
+    public boolean checkIfPostBelongsToCurrentUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                                   @PathVariable("postId") String postId) {
+        return postService.checkIfPostBelongsToCurrentUser(bearerToken, postId);
+    }
+
 }

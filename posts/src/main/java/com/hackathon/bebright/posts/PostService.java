@@ -131,4 +131,12 @@ public class PostService {
         post.setLikes(post.getLikes() - 1);
         return postRepository.save(post);
     }
+
+    public boolean checkIfPostBelongsToCurrentUser(String bearerToken, String postId) {
+        List<Post> postListByUser = getPostsByUser(bearerToken);
+        for (Post post : postListByUser) {
+            if (postId.equals(post.getPostId())) return true;
+        }
+        return false;
+    }
 }
