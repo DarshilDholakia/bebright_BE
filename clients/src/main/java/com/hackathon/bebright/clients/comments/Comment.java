@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data // does getters and setters, toString etc for you
 @AllArgsConstructor // creates a constructor with all arguments
@@ -19,18 +20,19 @@ public class Comment {
     private String postId;
     private String username;
     private String commentText;
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     public Comment(String postId, String username, String commentText) {
         this.postId = postId;
         this.username = username;
         this.commentText = commentText;
-        this.createdAt = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        this.createdAt = LocalDateTime.now().format(format);
     }
 
     public Comment(String username, String commentText, LocalDateTime createdAt) {
         this.username = username;
         this.commentText = commentText;
-        this.createdAt = createdAt;
+//        this.createdAt = createdAt;
     }
 }

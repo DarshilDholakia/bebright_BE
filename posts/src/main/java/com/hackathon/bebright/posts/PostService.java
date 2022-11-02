@@ -14,6 +14,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +30,8 @@ public class PostService {
 
     public Post addPost(String bearerToken, Post post) {
         checkPostInputProperties(post);
-        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL(), LocalDateTime.now());
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL(), LocalDateTime.now().format(format));
         return postRepository.insert(addPost);
     }
 

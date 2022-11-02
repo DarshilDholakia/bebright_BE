@@ -24,9 +24,9 @@ public class Post {
     private String imageURL;
     private Integer likes;
     private List<Comment> comments;
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    public Post(String username, String description, String imageURL, LocalDateTime createdAt) {
+    public Post(String username, String description, String imageURL, String createdAt) {
         this.username = username;
         this.description = description;
         this.imageURL = imageURL;
@@ -40,7 +40,7 @@ public class Post {
         this.description = description;
         this.likes = 0;
         this.comments = new ArrayList<>();
-        this.createdAt = LocalDateTime.now();
+//        this.createdAt = LocalDateTime.now();
     }
 
     public Post(String username) {
