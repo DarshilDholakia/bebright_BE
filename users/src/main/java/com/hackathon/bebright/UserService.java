@@ -34,7 +34,7 @@ public class UserService implements UserDetailsService {
     private final InterestClient interestClient;
 
     public User registerNewUser(User user) {
-        //TODO: add checking logic to make sure user fields comply with rules otherwise throw exceptions
+        checkUserInputProperties(user);
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             User insertedUser = userRepository.insert(user);
@@ -63,8 +63,7 @@ public class UserService implements UserDetailsService {
 
     public List<User> getUsersByOffice(String office) {
         //TODO: Checks for office e.g. what happens if users not found
-        //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
-        return userRepository.findByOfficesContaining(office);
+        return userRepository.findByOfficesContaining(office.toLowerCase().replaceAll(" ",""));
     }
 
     public List<User> getUsersByOfficeAndTeam(String office, String team) {
@@ -81,8 +80,9 @@ public class UserService implements UserDetailsService {
             throw new InvalidRequestException("There are no users from this office and team");
         }
 
-        //TODO: add normalising logic e.g. convert input to lowercase and take space out to compare to DB documents
-        return userRepository.findByOfficesAndTeamsContaining(office, team);
+        return userRepository.findByOfficesAndTeamsContaining(
+                office.toLowerCase().replaceAll(" ",""),
+                team.toLowerCase().replaceAll(" ", ""));
     }
 
     @Override
@@ -173,5 +173,26 @@ public class UserService implements UserDetailsService {
         String username = getUsername(bearerToken);
         User user = userRepository.findByUsername(username);
         return (List<String>) user.getTeams();
+    }
+
+    private void checkUserInputProperties(User user) {
+        if (user.getEmail() == null) {
+            throw new InvalidRequestException("Email cannot be empty");
+        }
+        if (user.getUsername() == null) {
+            throw new InvalidRequestException("Username cannot be empty");
+        }
+        if (user.getPassword() == null) {
+            throw new InvalidRequestException("Password cannot be empty");
+        }
+        if (user.getOffices() == null) {
+            throw new InvalidRequestException("Offices cannot be empty");
+        }
+        if (user.getTeams() == null) {
+            throw new InvalidRequestException("Teams cannot be empty");
+        }
+        if (user.getRoles() == null) {
+            throw new InvalidRequestException("Roles cannot be empty");
+        }
     }
 }

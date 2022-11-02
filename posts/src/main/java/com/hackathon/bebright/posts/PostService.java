@@ -109,7 +109,7 @@ public class PostService {
 
     private void checkPostInputProperties(Post post) {
         if (post.getDescription() == null) {
-            throw new InvalidRequestException("Description cannot be null");
+            throw new InvalidRequestException("Description cannot be empty");
         }
     }
 
