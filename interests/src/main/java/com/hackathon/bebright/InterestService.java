@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -43,6 +44,13 @@ public class InterestService {
 
         log.info("Registering interest: {} for user with username: {}", interestType, getUsername(bearerToken));
         return interestRepository.insert(interestToAdd);
+    }
+
+    public List<Interest> addInterestListForUser(String bearerToken, List<String> interestTypes) {
+        String username = getUsername(bearerToken);
+        List<Interest> interestListToAdd = new ArrayList<>();
+        interestTypes.forEach(stringInterest -> interestListToAdd.add(new Interest(username, stringInterest)));
+        return interestRepository.insert(interestListToAdd);
     }
 
     public void deleteAnInterestForUser(String bearerToken, String interestType) {

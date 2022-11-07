@@ -34,6 +34,12 @@ public class InterestController {
         return ResponseEntity.ok(interestService.addAnInterestForUser(bearerToken, interestType));
     }
 
+    @PostMapping("interests")
+    public ResponseEntity<List<Interest>> addMultipleInterestsForUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
+                                                         @RequestBody List<String> interestTypes) {
+        return ResponseEntity.ok(interestService.addInterestListForUser(bearerToken, interestTypes));
+    }
+
     @DeleteMapping("interests/{interestType}")
     public void deleteAnInterestForUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
                                         @PathVariable("interestType") String interestType) {
