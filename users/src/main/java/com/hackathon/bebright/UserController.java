@@ -45,6 +45,12 @@ public class UserController {
         return userService.validateToken(token);
     }
 
+    @GetMapping("/users/getUserByToken")
+    public User getUserByToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        log.info("Trying to fetch user by token {}", bearerToken);
+        return userService.getUserByToken(bearerToken);
+    }
+
     @GetMapping("/users/getUserByUsername/{username}")
     public User getUserByUsername(@PathVariable("username") String username) {
         return userService.getUserByUsername(username);

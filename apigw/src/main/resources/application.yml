@@ -18,6 +18,7 @@ spring:
             allowedMethods:
               - GET
               - POST
+              - PUT
       routes:
 #        ROUTES FOR USER SERVICE
         - id: users-sign-in
@@ -44,6 +45,8 @@ spring:
           uri: lb://POSTS
           predicates:
             - Path=/posts/**
+          filters:
+            - CustomAuthorisationFilter
 
 #         ROUTES FOR INTEREST SERVICE
         - id: interests-protected

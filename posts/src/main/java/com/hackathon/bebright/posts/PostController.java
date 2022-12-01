@@ -78,4 +78,9 @@ public class PostController {
         return postService.checkIfPostBelongsToCurrentUser(bearerToken, postId);
     }
 
+    @GetMapping(path = "posts/check")
+    public boolean checkIfCurrentUserHasPosted(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        return postService.checkIfCurrentUserHasPosted(bearerToken);
+    }
+
 }

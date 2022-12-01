@@ -13,11 +13,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,8 +33,9 @@ public class PostService {
 
     public Post addPost(String bearerToken, Post post) {
         checkPostInputProperties(post);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
-        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL(), LocalDateTime.now().format(format));
+//        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+//        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL(), LocalDateTime.now().format(format));
+        Post addPost = new Post(getUsername(bearerToken), post.getDescription(), post.getImageURL());
         return postRepository.insert(addPost);
     }
 
@@ -139,6 +143,14 @@ public class PostService {
         for (Post post : postListByUser) {
             if (postId.equals(post.getPostId())) return true;
         }
+        return false;
+    }
+
+    public boolean checkIfCurrentUserHasPosted(String bearerToken) {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusHours(23).plusMinutes(59).plusSeconds(59);
+        Optional<Post> optionalPost = postRepository.findByUsernameAndDate(getUsername(bearerToken), startOfDay, endOfDay);
+        if (optionalPost.isPresent()) return true;
         return false;
     }
 }

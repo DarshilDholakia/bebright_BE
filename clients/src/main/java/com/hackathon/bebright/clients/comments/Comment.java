@@ -20,14 +20,14 @@ public class Comment {
     private String postId;
     private String username;
     private String commentText;
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public Comment(String postId, String username, String commentText) {
         this.postId = postId;
         this.username = username;
         this.commentText = commentText;
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
-        this.createdAt = LocalDateTime.now().format(format);
+//        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        this.createdAt = LocalDateTime.now();
     }
 
     public Comment(String username, String commentText, LocalDateTime createdAt) {

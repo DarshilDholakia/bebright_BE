@@ -99,6 +99,10 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public User getUserByToken(String bearerToken) {
+        return getUserByUsername(getUsername(bearerToken));
+    }
+
     public User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
@@ -143,8 +147,8 @@ public class UserService implements UserDetailsService {
 
         return usernameList;
     }
-
     // To be shown on the timeline without any filters being applied (posts from users across all current user's offices)
+
     public List<String> getUsernamesByMultipleOffices(String bearerToken) {
         String username = getUsername(bearerToken);
         User user = getUserByUsername(username);

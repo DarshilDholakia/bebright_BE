@@ -24,15 +24,15 @@ public class Post {
     private String imageURL;
     private Integer likes;
     private List<Comment> comments;
-    private String createdAt;
+    private LocalDateTime createdAt;
 
-    public Post(String username, String description, String imageURL, String createdAt) {
+    public Post(String username, String description, String imageURL) {
         this.username = username;
         this.description = description;
         this.imageURL = imageURL;
         this.likes = 0;
         this.comments = new ArrayList<>();
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Post(String username, String description) {
