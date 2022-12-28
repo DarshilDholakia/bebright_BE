@@ -1,5 +1,11 @@
 server:
   port: 8086
+  ssl:
+    key-store: classpath:bebright.p12
+    key-store-password: password
+    key-store-type: pkcs12
+    key-alias: bebright
+    key-password: password
 
 spring:
   main:
