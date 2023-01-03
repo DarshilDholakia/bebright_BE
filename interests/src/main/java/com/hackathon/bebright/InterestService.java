@@ -8,6 +8,8 @@ import com.hackathon.bebright.clients.interests.Interest;
 import com.hackathon.bebright.exceptions.AppException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,10 +23,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class InterestService {
-
     private final InterestRepository interestRepository;
-    public List<Interest> getUsersInterests(String bearerToken) {
-        return interestRepository.findByUsername(getUsername(bearerToken));
+
+    @Cacheable(value = "interests", key = "#username")
+    public List<Interest> getUsersInterests(String username) {
+        log.info("Getting interests for user with username {}", username);
+        return interestRepository.findByUsername(username);
     }
 
     public List<Interest> getDifferentUsersByInterest(String interest) {
@@ -53,12 +57,13 @@ public class InterestService {
         return interestRepository.insert(interestListToAdd);
     }
 
-    public void deleteAnInterestForUser(String bearerToken, String interestType) {
-        log.info("Deleting interest of type: {} for user with username: {}", interestType, getUsername(bearerToken));
-        interestRepository.deleteByUsernameAndInterestType(getUsername(bearerToken), interestType);
+    @CacheEvict(value = "interests", key = "#username")
+    public void deleteAnInterestForUser(String username, String interestType) {
+        log.info("Deleting interest of type: {} for user with username: {}", interestType, username);
+        interestRepository.deleteByUsernameAndInterestType(username, interestType);
     }
 
-    private String getUsername(String bearerToken) {
+    public String getUsername(String bearerToken) {
         String accessToken = bearerToken.split(" ")[1];
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();

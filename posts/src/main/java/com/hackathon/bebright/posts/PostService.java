@@ -63,6 +63,7 @@ public class PostService {
         return getPostOrThrowNull(postId);
     }
 
+    //TODO: implement caching for this method
     public List<Post> getPostsByUser(String bearerToken) {
         String username = getUsername(bearerToken);
         List<Post> postListByUser = postRepository.findByUsername(username);

@@ -3,6 +3,7 @@ package com.hackathon.bebright;
 import com.hackathon.bebright.clients.interests.Interest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,8 @@ public class InterestController {
     @GetMapping("/interests")
     public ResponseEntity<List<Interest>> getUsersInterests(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         log.info("Getting a user's interests");
-        return ResponseEntity.ok(interestService.getUsersInterests(bearerToken));
+        String username = interestService.getUsername(bearerToken);
+        return ResponseEntity.ok(interestService.getUsersInterests(username));
     }
 
     @GetMapping("/interests/{interestType}")
@@ -43,6 +45,7 @@ public class InterestController {
     @DeleteMapping("interests/{interestType}")
     public void deleteAnInterestForUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken,
                                         @PathVariable("interestType") String interestType) {
-        interestService.deleteAnInterestForUser(bearerToken, interestType);
+        String username = interestService.getUsername(bearerToken);
+        interestService.deleteAnInterestForUser(username, interestType);
     }
 }

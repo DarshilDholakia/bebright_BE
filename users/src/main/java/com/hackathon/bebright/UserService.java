@@ -33,6 +33,7 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final InterestClient interestClient;
 
+    //TODO: implement caching for this method
     public User registerNewUser(User user) {
         checkUserInputProperties(user);
         try {
